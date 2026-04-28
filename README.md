@@ -1,9 +1,9 @@
 # MyUbuntu for neuroimaging analysis
 
 
-myubuntu is a docker container based on Ubuntu 18.04 LTS. Several common neuroimaging softwares are installed and ready to use.
+myubuntu is a docker container based on **Ubuntu 24.04.3 LTS (Noble Numbat)**. Several common neuroimaging softwares are installed and ready to use.
 
-It also contains R and Python2/3 for basic computations. And they can be called by other neuroimaging analysis tools (e.g. 3dMVM requires R for ANOVA analysis).
+It also contains R and Python3 for basic computations. And they can be called by other neuroimaging analysis tools (e.g. 3dMVM requires R for ANOVA analysis).
 
 ## When do you need this container:
  
@@ -32,8 +32,8 @@ It also contains R and Python2/3 for basic computations. And they can be called 
 * AFNI:            AFNI_22.2.02 'Marcus * Aurelius'
 * MRtrix3:         3.0.3
 * FSL:             6.0.6
-* Python:          2.7.17/3.6.9
-* R:               3.6.3
+* Python:          3.x
+* R:               4.x (Ubuntu 24.04 default)
 * MATLAB Runtime:  2014b(8.4)
 * **OpenClaw:      2026.3.8 (NEW in v0.3)**
   
