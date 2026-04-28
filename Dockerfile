@@ -3,21 +3,26 @@
 #
 # Author: Liu Mengxing 刘梦醒
 # Contact: mengxing1844@gmail.com
+# Modified: Added FreeSurfer license and OpenClaw support
 #
 # Example build:
-#   docker build --no-cache --tag lmengxing/myubuntu:0.2 .
+#   docker build --no-cache --tag lmengxing/myubuntu:0.3 .
 #
 # Example usage:
-#   docker run -v /path/to/your/subject:/input /path/to/your/output:/output lmengxing/myubuntu:0.2
-#   docker run lmengxing/myubuntu:0.2 3dinfo
+#   docker run -v /path/to/your/subject:/input /path/to/your/output:/output lmengxing/myubuntu:0.3
+#   docker run lmengxing/myubuntu:0.3 3dinfo
 
 
 
 # version log
 
+# version: 0.3
+# Added: FreeSurfer license.txt support (COPY license.txt to /opt/freesurfer/)
+# Added: OpenClaw 2026.3.8 with Node.js 22.x
+# Base: Ubuntu 18.04 (for neuroimaging tools compatibility)
+
 # version: 0.2
 # support calling command through host command line
-
 
 # version: 0.1
 # Ubuntu version: 18.04
@@ -28,6 +33,8 @@
 # AFNI:         AFNI_22.2.02 'Marcus Aurelius'
 # MRtrix3:      3.0.3
 # FSL:          6.0.6 
+# OpenClaw:     2026.3.8 (NEW)
+
 
 
 
@@ -54,6 +61,13 @@ RUN apt-get update && apt-get -y install \
 
 # Download Freesurfer 7.2 from MGH and untar to /opt
 RUN wget -N -qO- ftp://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/7.2.0/freesurfer-linux-ubuntu18_amd64-7.2.0.tar.gz | tar -xz -C /opt && chown -R root:root /opt/freesurfer && chmod -R a+rx /opt/freesurfer
+
+# ============================================================
+# FreeSurfer License - COPY your license.txt to the container
+# ============================================================
+# You need to have license.txt in the build context
+# Get your license from: https://surfer.nmr.mgh.harvard.edu/registration.html
+COPY license.txt /opt/freesurfer/license.txt
 
 RUN apt-get update --fix-missing \
  && apt-get install -y bzip2 ca-certificates \
@@ -163,7 +177,7 @@ RUN cd /opt/mrtrix3/ && ./set_path
 RUN mv /root/abin /opt/
 ENV PATH=/opt/abin:/opt/mrtrix3:$PATH
 
-# install FSL version 6.0.2
+# install FSL version 6.0.6
 RUN wget https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py -O fslinstaller.py \
     && python fslinstaller.py -V 6.0.6 -d /opt/fsl 
 ARG CACHEBUST=1 
@@ -180,5 +194,46 @@ RUN apt install libglw1-mesa
 RUN chmod -R 777 /root
 ENV PATH="$PATH:/opt/freesurfer/bin:/opt/mrtrix3/bin"
 
-#ENTRYPOINT /bin/bash 
 
+# ============================================================
+# OpenClaw Installation
+# ============================================================
+# Install Node.js 22.x (required for OpenClaw)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs
+
+# Verify Node.js and npm versions
+RUN node --version && npm --version
+
+# Install OpenClaw globally
+RUN npm install -g openclaw@2026.3.8
+
+# Set OpenClaw environment variables
+ENV OPENCLAW_HOME=/root/.openclaw
+ENV PATH="$PATH:/root/.npm-global/bin"
+
+# Create OpenClaw directories
+RUN mkdir -p $OPENCLAW_HOME/agents/main \
+    && mkdir -p $OPENCLAW_HOME/skills \
+    && mkdir -p $OPENCLAW_HOME/workspace
+
+# Initialize OpenClaw (creates default config)
+RUN openclaw status || true
+
+# Install useful OpenClaw skills
+RUN openclaw skill install aistore \
+    && openclaw skill install summarize \
+    && openclaw skill install tavily-search \
+    && openclaw skill install find-skills \
+    && openclaw skill install self-improving \
+    && openclaw skill install skill-vetter
+
+# Expose OpenClaw Gateway port
+EXPOSE 18789
+
+# OpenClaw health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD openclaw status || exit 1
+
+
+#ENTRYPOINT /bin/bash 
