@@ -1,7 +1,7 @@
 # MyUbuntu for neuroimaging analysis
 
 
-myubuntu is a docker container based on Ubuntu 18.04LTS. Several common neuroimaging softwares are installed and ready to use.
+myubuntu is a docker container based on Ubuntu 24.04.3 LTS ~~Ubuntu 18.04LTS~~. Several common neuroimaging softwares are installed and ready to use.
 
 It also contains R and Python2/3 for basic computationas. And they can be called by other neuroimaging analysis tools (e.g. 3dMVM requires R for ANOVA analysis).
 
