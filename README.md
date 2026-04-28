@@ -21,21 +21,29 @@ It also contains R and Python3 for basic computations. And they can be called by
 * authors:
  - Liu Mengxing
 
-* version: "0.3"
+* version: "0.4"
 * date-released: "2026-04-28"
 * DOI:10.5281/zenodo.17559245
 
 ## *Full list of main software and version:*
 
-* Freesurfer:      7.2.0 (with license.txt)
-* ANTs:            2.4.0 SHA:04a018d
-* AFNI:            AFNI_22.2.02 'Marcus * Aurelius'
-* MRtrix3:         3.0.3
-* FSL:             6.0.6
-* Python:          3.x
-* R:               4.x (Ubuntu 24.04 default)
-* MATLAB Runtime:  2014b(8.4)
-* **OpenClaw:      2026.3.8 (NEW in v0.3)**
+| Software | Version |
+|----------|---------|
+| Freesurfer | 7.2.0 (with license.txt) |
+| ANTs | 2.4.0 SHA:04a018d |
+| AFNI | AFNI_22.2.02 'Marcus Aurelius' |
+| MRtrix3 | 3.0.3 |
+| FSL | 6.0.6 |
+| Python | 3.x |
+| R | 4.x (Ubuntu 24.04 default) |
+| MATLAB Runtime | R2014b + R2024b |
+| OpenClaw | 2026.3.8 |
+| **ParaView** | 5.x (NEW in v0.4) |
+| **MRIcron** | 1.0.20220106 (NEW in v0.4) |
+| **DSI Studio** | 2025.04.16 (NEW in v0.4) |
+| **fMRIPrep** | latest (NEW in v0.4) |
+| **3D Slicer** | 5.8.0 (NEW in v0.4) |
+
   
 ## *Installation*
 
@@ -51,9 +59,9 @@ To build the container from Dockerfile, you should have docker engine installed 
     $ cd myubuntu/
     # Copy your FreeSurfer license.txt here
     $ cp /path/to/your/license.txt ./
-    $ docker build -t myubuntu:0.3 .
+    $ docker build -t myubuntu:0.4 .
 
-This usually takes 2-3 hours, as building from Dockerfile basically equals compiling the softwares from fresh. 
+This usually takes 3-4 hours, as building from Dockerfile basically equals compiling the softwares from fresh. 
 
 **Please be alert**, if you choose to build from Dockerfile, some dependencies might be installed as the latest version by your installation time (e.g. some libraries). But the neuroimaging tools will be in the exact same version as shown above.
 
@@ -63,11 +71,11 @@ If you choose to pull the container from docker hub instead of building from Doc
 
 Pulling with **Docker**:
 
-    $ docker pull lmengxing/myubuntu:0.3
+    $ docker pull lmengxing/myubuntu:0.4
 
 Pulling with **Singularity**:
 
-    $ singularity build myubuntu_0.3.sif docker://lmengxing/myubuntu:0.3
+    $ singularity build myubuntu_0.4.sif docker://lmengxing/myubuntu:0.4
 
 
 ## *Usage*
@@ -78,15 +86,15 @@ Simplest example:
 
 Running with **Docker**:
 
-    $ docker run -it lmengxing/myubuntu:0.3
+    $ docker run -it lmengxing/myubuntu:0.4
 
 or 
 
-    $ sudo docker run -it lmengxing/myubuntu:0.3  # depends on your user permission
+    $ sudo docker run -it lmengxing/myubuntu:0.4  # depends on your user permission
 
 Running with **Singularity**:
 
-    $ singularity shell myubuntu_0.3.sif
+    $ singularity shell myubuntu_0.4.sif
 
 
 Formal usage example:
@@ -95,12 +103,12 @@ Usually you would like to mount your data on the container, in order to access a
 
 Running with **Docker**:
 
-    $ docker run -it -v /home/username/project:/root/work lmengxing/myubuntu:0.3
-    $ docker run lmengxing/myubuntu:0.3 3dinfo
+    $ docker run -it -v /home/username/project:/root/work lmengxing/myubuntu:0.4
+    $ docker run lmengxing/myubuntu:0.4 3dinfo
 
 Running with **Singularity**:
 
-    $ singularity shell --bind /home/username/project:/root/work myubuntu_0.3.sif
+    $ singularity shell --bind /home/username/project:/root/work myubuntu_0.4.sif
 
 With this command, after you enter the docker container, you will find your data under /root/work. You can also try to mount multiple directories on your host to multiple destinations in the docker container, even the directories do not exist in the docker container before mounting.
 
@@ -123,7 +131,7 @@ After adding access, you can run myubuntu with a few more parameters:
         --user=0 \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         -e DISPLAY=${DISPLAY} \
-        lmengxing/myubuntu:0.3 /bin/bash
+        lmengxing/myubuntu:0.4 /bin/bash
 
 Once you finish your work, and if you are concerned about the X server host security, you can remove "root" from your access list by:
 
@@ -159,7 +167,7 @@ choco install vcxsrv
 
 ```PowerShell
 ipconfig
-docker run -it -v YOURWORKPATH:/root/work lmengxing/myubuntu:0.3
+docker run -it -v YOURWORKPATH:/root/work lmengxing/myubuntu:0.4
 ```
 ```Bash
 export DISPLAY='YOURIP:0.0'
@@ -168,7 +176,57 @@ freeview
 This method is not stable in some Windows 10 setups and seems to be related to the AMD graphics (libGL error: No matching fbConfigs or visuals found
 libGL error: failed to load driver: swrast).
 
-## *OpenClaw Usage (NEW in v0.3)*
+## *New Tools Usage (v0.4)*
+
+### ParaView
+
+ParaView is a scientific visualization application. Run:
+
+    $ paraview
+
+### MATLAB Runtime
+
+MATLAB Runtime R2014b is installed for FreeSurfer subfield modules. R2024b is also available for newer MATLAB applications.
+
+Environment variable:
+    $MATLAB_RUNTIME_ROOT=/opt/matlab_runtime/R2024b
+
+### MRIcron
+
+MRIcron is a NIfTI image viewer with DICOM conversion tools:
+
+    $ mricron          # Image viewer
+    $ dcm2niix         # DICOM to NIfTI converter
+    $ npm              # Statistical analysis
+
+### DSI Studio
+
+DSI Studio is for diffusion MRI analysis and tractography:
+
+    $ dsi_studio
+
+### fMRIPrep
+
+fMRIPrep is a fMRI preprocessing pipeline. Usage:
+
+    $ fmriprep <input_bids_path> <output_path> participant
+
+Example:
+    $ fmriprep /root/work/bids_data /root/work/derivatives participant --fs-license-file /opt/freesurfer/license.txt
+
+For Docker wrapper:
+    $ fmriprep-docker <input_bids_path> <output_path> participant
+
+### 3D Slicer
+
+3D Slicer is a medical image analysis platform:
+
+    $ Slicer
+
+Or run the GUI:
+    $ /opt/slicer/Slicer-5.8.0-linux-amd64/Slicer
+
+## *OpenClaw Usage (v0.3+)*
 
 OpenClaw is an AI assistant framework that can help with neuroimaging workflows. It comes pre-installed with useful skills.
 
@@ -205,7 +263,7 @@ FreeSurfer requires a license file. In version 0.3+, the license is built into t
 
 If you already have a container and need to use a different license:
 
-    $ docker run -it -v /path/to/license.txt:/opt/freesurfer/license.txt lmengxing/myubuntu:0.3
+    $ docker run -it -v /path/to/license.txt:/opt/freesurfer/license.txt lmengxing/myubuntu:0.4
 
 ## *Contributing*
 
