@@ -43,7 +43,7 @@ There are two ways to install this container on your personal machine or high pe
 
 To build the container from Dockerfile, you should have docker engine installed on your machine.
 
-    $ git clone  https://github.com/MengxingLiu/myubuntu.git
+    $ git clone  https://github.com/jnbai517/myubuntu.git
     $ cd myubuntu/
     $ docker build -t myubuntu:0.1 .
 This usually takes 2-3 hours, as building to from dockerfile basically equals compiling the softwares from fresh. 
