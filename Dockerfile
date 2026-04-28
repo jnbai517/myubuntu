@@ -16,7 +16,8 @@
 
 # version log
 
-# version: 0.4.1
+# version: 0.4.2
+# Updated: FSL 6.0.7.22 (matching host system version)
 # Changed: Removed built-in license.txt (mount at runtime instead)
 # Fixed: README commands updated for proper usage
 # Added: ParaView 5.x (apt)
@@ -42,7 +43,7 @@
 # ANTs:         2.4.0 SHA:04a018d
 # AFNI:         AFNI_22.2.02 'Marcus Aurelius'
 # MRtrix3:      3.0.3
-# FSL:          6.0.6 
+# FSL:          6.0.7.22 
 # OpenClaw:     2026.3.8
 # ParaView:     5.x
 # MATLAB Runtime: R2014b + R2024b
@@ -232,10 +233,10 @@ RUN mv /root/abin /opt/
 ENV PATH=/opt/abin:/opt/mrtrix3:$PATH
 
 # ============================================================
-# FSL 6.0.6 Installation
+# FSL 6.0.7.22 Installation
 # ============================================================
 RUN wget https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py -O fslinstaller.py \
-    && python3 fslinstaller.py -V 6.0.6 -d /opt/fsl 
+    && python3 fslinstaller.py -V 6.0.7.22 -d /opt/fsl 
 
 ARG CACHEBUST=1 
 ENV FSLDIR="/opt/fsl"

@@ -33,7 +33,7 @@ It also contains R and Python3 for basic computations. And they can be called by
 | ANTs | 2.4.0 SHA:04a018d |
 | AFNI | AFNI_22.2.02 'Marcus Aurelius' |
 | MRtrix3 | 3.0.3 |
-| FSL | 6.0.6 |
+| FSL | 6.0.7.22 |
 | Python | 3.x |
 | R | 4.x (Ubuntu 24.04 default) |
 | MATLAB Runtime | R2014b + R2024b |
