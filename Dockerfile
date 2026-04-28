@@ -16,7 +16,9 @@
 
 # version log
 
-# version: 0.4
+# version: 0.4.1
+# Changed: Removed built-in license.txt (mount at runtime instead)
+# Fixed: README commands updated for proper usage
 # Added: ParaView 5.x (apt)
 # Added: MATLAB Runtime R2024b (in addition to R2014b for FreeSurfer)
 # Added: MRIcron (latest from GitHub)
@@ -140,8 +142,8 @@ RUN apt-get update && apt-get -y install \
 # ============================================================
 RUN wget -N -qO- ftp://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/7.2.0/freesurfer-linux-ubuntu18_amd64-7.2.0.tar.gz | tar -xz -C /opt && chown -R root:root /opt/freesurfer && chmod -R a+rx /opt/freesurfer
 
-# FreeSurfer License - COPY your license.txt to the container
-COPY license.txt /opt/freesurfer/license.txt
+# FreeSurfer License - mount your license.txt at runtime
+# Run: docker run -v /path/to/license.txt:/opt/freesurfer/license.txt ...
 
 RUN cat /opt/freesurfer/SetUpFreeSurfer.sh >> ~/.bashrc
 

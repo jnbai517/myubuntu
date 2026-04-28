@@ -29,7 +29,7 @@ It also contains R and Python3 for basic computations. And they can be called by
 
 | Software | Version |
 |----------|---------|
-| Freesurfer | 7.2.0 (with license.txt) |
+| Freesurfer | 7.2.0 (license required) |
 | ANTs | 2.4.0 SHA:04a018d |
 | AFNI | AFNI_22.2.02 'Marcus Aurelius' |
 | MRtrix3 | 3.0.3 |
@@ -53,15 +53,13 @@ There are two ways to install this container on your personal machine or high pe
 
 To build the container from Dockerfile, you should have docker engine installed on your machine.
 
-**Important:** You need to place your FreeSurfer `license.txt` file in the same directory as the Dockerfile before building.
-
     $ git clone https://github.com/jnbai517/myubuntu.git
     $ cd myubuntu/
-    # Copy your FreeSurfer license.txt here
-    $ cp /path/to/your/license.txt ./
     $ docker build -t myubuntu:0.4 .
 
 This usually takes 3-4 hours, as building from Dockerfile basically equals compiling the softwares from fresh. 
+
+**Note:** FreeSurfer license is not included. Mount your license.txt at runtime (see FreeSurfer License section).
 
 **Please be alert**, if you choose to build from Dockerfile, some dependencies might be installed as the latest version by your installation time (e.g. some libraries). But the neuroimaging tools will be in the exact same version as shown above.
 
@@ -207,15 +205,21 @@ DSI Studio is for diffusion MRI analysis and tractography:
 
 ### fMRIPrep
 
-fMRIPrep is a fMRI preprocessing pipeline. Usage:
+fMRIPrep is a fMRI preprocessing pipeline. Usage (mount FreeSurfer license):
 
-    $ fmriprep <input_bids_path> <output_path> participant
+    $ docker run -v /path/to/license.txt:/opt/freesurfer/license.txt \
+        lmengxing/myubuntu:0.4 \
+        fmriprep <input_bids_path> <output_path> participant
 
 Example:
-    $ fmriprep /root/work/bids_data /root/work/derivatives participant --fs-license-file /opt/freesurfer/license.txt
+    $ docker run -v /root/work/license.txt:/opt/freesurfer/license.txt \
+        -v /root/work/bids_data:/root/work/bids_data \
+        -v /root/work/derivatives:/root/work/derivatives \
+        lmengxing/myubuntu:0.4 \
+        fmriprep /root/work/bids_data /root/work/derivatives participant
 
 For Docker wrapper:
-    $ fmriprep-docker <input_bids_path> <output_path> participant
+    $ fmriprep-docker <input_bids_path> <output_path> participant --fs-license-file /path/to/license.txt
 
 ### 3D Slicer
 
@@ -254,16 +258,20 @@ OpenClaw documentation: https://docs.openclaw.ai
 
 ## *FreeSurfer License*
 
-FreeSurfer requires a license file. In version 0.3+, the license is built into the image.
+FreeSurfer requires a license file. You need to mount your license at runtime.
 
 **To get your FreeSurfer license:**
 1. Register at: https://surfer.nmr.mgh.harvard.edu/registration.html
 2. Download your `license.txt`
-3. Place it in the same directory as the Dockerfile before building
 
-If you already have a container and need to use a different license:
+**Mount license at runtime:**
 
     $ docker run -it -v /path/to/license.txt:/opt/freesurfer/license.txt lmengxing/myubuntu:0.4
+
+**Or set environment variable for fMRIPrep:**
+
+    $ export FS_LICENSE=/path/to/license.txt
+    $ docker run -it -v $FS_LICENSE:/opt/freesurfer/license.txt lmengxing/myubuntu:0.4
 
 ## *Contributing*
 
