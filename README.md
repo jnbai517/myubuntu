@@ -29,7 +29,7 @@ It also contains R and Python3 for basic computations. And they can be called by
 
 | Software | Version |
 |----------|---------|
-| Freesurfer | 7.2.0 (license required) |
+| Freesurfer | 8.2.0 (license required) |
 | ANTs | 2.4.0 SHA:04a018d |
 | AFNI | AFNI_22.2.02 'Marcus Aurelius' |
 | MRtrix3 | 3.0.3 |
@@ -53,8 +53,16 @@ There are two ways to install this container on your personal machine or high pe
 
 To build the container from Dockerfile, you should have docker engine installed on your machine.
 
+**Prerequisites for FreeSurfer 8.2.0:**
+
+Download the FreeSurfer 8.2.0 Ubuntu 24.04 package and place it in the myubuntu directory:
+
+1. Download `freesurfer_ubuntu24-8.2.0_amd64.deb` from [FreeSurfer website](https://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall)
+2. Copy it to the myubuntu directory before building
+
     $ git clone https://github.com/jnbai517/myubuntu.git
     $ cd myubuntu/
+    $ cp /path/to/freesurfer_ubuntu24-8.2.0_amd64.deb .
     $ docker build -t myubuntu:0.4 .
 
 This usually takes 3-4 hours, as building from Dockerfile basically equals compiling the softwares from fresh. 
@@ -207,12 +215,12 @@ DSI Studio is for diffusion MRI analysis and tractography:
 
 fMRIPrep is a fMRI preprocessing pipeline. Usage (mount FreeSurfer license):
 
-    $ docker run -v /path/to/license.txt:/opt/freesurfer/license.txt \
+    $ docker run -v /path/to/license.txt:/usr/local/freesurfer/8.2.0/license.txt \
         lmengxing/myubuntu:0.4 \
         fmriprep <input_bids_path> <output_path> participant
 
 Example:
-    $ docker run -v /root/work/license.txt:/opt/freesurfer/license.txt \
+    $ docker run -v /root/work/license.txt:/usr/local/freesurfer/8.2.0/license.txt \
         -v /root/work/bids_data:/root/work/bids_data \
         -v /root/work/derivatives:/root/work/derivatives \
         lmengxing/myubuntu:0.4 \
@@ -266,12 +274,12 @@ FreeSurfer requires a license file. You need to mount your license at runtime.
 
 **Mount license at runtime:**
 
-    $ docker run -it -v /path/to/license.txt:/opt/freesurfer/license.txt lmengxing/myubuntu:0.4
+    $ docker run -it -v /path/to/license.txt:/usr/local/freesurfer/8.2.0/license.txt lmengxing/myubuntu:0.4
 
 **Or set environment variable for fMRIPrep:**
 
     $ export FS_LICENSE=/path/to/license.txt
-    $ docker run -it -v $FS_LICENSE:/opt/freesurfer/license.txt lmengxing/myubuntu:0.4
+    $ docker run -it -v $FS_LICENSE:/usr/local/freesurfer/8.2.0/license.txt lmengxing/myubuntu:0.4
 
 ## *Contributing*
 

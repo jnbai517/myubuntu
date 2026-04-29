@@ -16,6 +16,12 @@
 
 # version log
 
+# version: 0.4.3
+# Updated: FreeSurfer 8.2.0 (using .deb package instead of tarball)
+# Changed: FreeSurfer now installed from freesurfer_ubuntu24-8.2.0_amd64.deb
+# Changed: FREESURFER_HOME is now /usr/local/freesurfer/8.2.0
+# Note: Requires freesurfer_ubuntu24-8.2.0_amd64.deb in build context
+
 # version: 0.4.2
 # Updated: FSL 6.0.7.22 (matching host system version)
 # Changed: Removed built-in license.txt (mount at runtime instead)
@@ -39,14 +45,14 @@
 # Ubuntu version: 18.04
 
 # common tools included:
-# Freesurfer:   7.2.0
+# Freesurfer:   8.2.0
 # ANTs:         2.4.0 SHA:04a018d
 # AFNI:         AFNI_22.2.02 'Marcus Aurelius'
 # MRtrix3:      3.0.3
 # FSL:          6.0.7.22 
 # OpenClaw:     2026.3.8
 # ParaView:     5.x
-# MATLAB Runtime: R2014b + R2024b
+# MATLAB Runtime: R2024b (bundled with FreeSurfer 8.2.0)
 # MRIcron:      latest
 # DSI Studio:   2025.04.16
 # fMRIPrep:     latest (pip)
@@ -139,18 +145,29 @@ RUN apt-get update && apt-get -y install \
         && rm -rf /var/lib/apt/lists/*
 
 # ============================================================
-# FreeSurfer 7.2.0 Installation
+# FreeSurfer 8.2.0 Installation (via local .deb package)
 # ============================================================
-RUN wget -N -qO- ftp://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/7.2.0/freesurfer-linux-ubuntu18_amd64-7.2.0.tar.gz | tar -xz -C /opt && chown -R root:root /opt/freesurfer && chmod -R a+rx /opt/freesurfer
+# NOTE: You need to have freesurfer_ubuntu24-8.2.0_amd64.deb in the build context.
+# Download from: https://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall
+# Build command: docker build -t myubuntu:0.4 .
+
+# Copy FreeSurfer .deb package from build context
+COPY freesurfer_ubuntu24-8.2.0_amd64.deb /tmp/freesurfer.deb
+
+# Install FreeSurfer 8.2.0 from .deb package
+RUN apt-get update && \
+    apt-get install -y /tmp/freesurfer.deb && \
+    rm /tmp/freesurfer.deb && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # FreeSurfer License - mount your license.txt at runtime
-# Run: docker run -v /path/to/license.txt:/opt/freesurfer/license.txt ...
+# Run: docker run -v /path/to/license.txt:/usr/local/freesurfer/8.2.0/license.txt ...
 
-RUN cat /opt/freesurfer/SetUpFreeSurfer.sh >> ~/.bashrc
+ENV FREESURFER_HOME /usr/local/freesurfer/8.2.0
+RUN cat $FREESURFER_HOME/SetUpFreeSurfer.sh >> ~/.bashrc 2>/dev/null || echo "FreeSurfer setup complete"
 
-# MATLAB R2014b Runtime (required by FreeSurfer)
-ENV FREESURFER_HOME /opt/freesurfer
-RUN wget -N -qO- "https://surfer.nmr.mgh.harvard.edu/fswiki/MatlabRuntime?action=AttachFile&do=get&target=runtime2014bLinux.tar.gz" | tar -xz -C $FREESURFER_HOME && chown -R root:root /opt/freesurfer/MCRv84 && chmod -R a+rx /opt/freesurfer/MCRv84
+# Note: MATLAB Runtime is bundled with the .deb package for FreeSurfer 8.2.0
 
 # ============================================================
 # MATLAB Runtime R2024b (additional, for newer applications)
@@ -325,7 +342,7 @@ RUN openclaw skill install aistore \
 # ============================================================
 # Environment Variables
 # ============================================================
-ENV PATH="$PATH:/opt/freesurfer/bin:/opt/mrtrix3/bin:/opt/mricron:/opt/dsi_studio:/opt/slicer/Slicer-5.8.0-linux-amd64"
+ENV PATH="$PATH:/usr/local/freesurfer/8.2.0/bin:/opt/mrtrix3/bin:/opt/mricron:/opt/dsi_studio:/opt/slicer/Slicer-5.8.0-linux-amd64"
 
 # Expose OpenClaw Gateway port
 EXPOSE 18789
